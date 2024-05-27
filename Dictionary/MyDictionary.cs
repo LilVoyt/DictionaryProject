@@ -48,5 +48,17 @@ namespace Dictionary
             Pairs.Add(key, values);
             WriteToFile();
         }
+
+        public override string ToString()
+        {
+            string res = "";
+            foreach (var pair in Pairs)
+            {
+                res += pair.Key + " - ";
+                res += string.Join(", ", pair.Value);
+                res += "\n";
+            }
+            return res.ToString();
+        }
     }
 }

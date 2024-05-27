@@ -12,7 +12,11 @@ namespace Dictionary
         {
             DictionaryList list = new DictionaryList();
             list.AddDictionary("ua", "en");
-            list.Dictionaries[0].Add("word", new List<string> { "work" });
+            list.Dictionaries[0].Add("word", new List<string> { "work", "adsf", "asdf" });
+            Console.WriteLine(list.Dictionaries[0]);
+            list.AddDictionary("en", "pl");
+            list.Dictionaries[0].Add("asgkhjty", new List<string> { "asdf", "3456v", "fmkhj" });
+            Console.WriteLine(list.Dictionaries[0]);
         }
     }
 }
