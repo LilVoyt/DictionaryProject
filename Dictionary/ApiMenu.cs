@@ -38,22 +38,11 @@ namespace Dictionary
                 switch (toDo)
                 {
                     case 1:
-                        Console.Write($"Enter new word in {list.Dictionaries[choose].KeyLanguage}: ");
-                        string word = Console.ReadLine();
-                        Console.Write($"Enter the definitions in {list.Dictionaries[choose].ValueLanguage} (split by ', '): ");
-                        string value = Console.ReadLine();
-                        List<string> words = value.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
-                        if (list.Dictionaries[choose].Pairs.ContainsKey(word))
-                        {
-                            list.Dictionaries[choose].Pairs[word].AddRange(words);
-                            list.WriteToFile();
-                        }
-                        else
-                        {
-                            list.Dictionaries[choose].Pairs.Add(word, words);
-                            list.WriteToFile();
-                        }
-                        Console.WriteLine(list.Dictionaries[choose].Pairs);
+                        AddNewWord(list.Dictionaries[choose]);
+                        list.WriteToFile();
+                        break;
+                    case 2:
+                        
                         break;
                 }
             }
@@ -62,6 +51,32 @@ namespace Dictionary
                 Console.WriteLine("Invalid choice. Please enter a valid index.");
             }
         }
+
+        public void AddNewWord(MyDictionary dictionary)
+        {
+            Console.Write($"Enter new word in {dictionary.KeyLanguage}: ");
+            string word = Console.ReadLine();
+            Console.Write($"Enter the definitions in {dictionary.ValueLanguage} (split by ', '): ");
+            string value = Console.ReadLine();
+            List<string> words = value.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+            if (dictionary.Pairs.ContainsKey(word))
+            {
+                dictionary.Pairs[word].AddRange(words);
+            }
+            else
+            {
+                dictionary.Pairs.Add(word, words);
+            }
+            foreach(var pair in dictionary.Pairs)
+            {
+                Console.WriteLine($"{pair.Key} - {string.Join(", ", pair.Value)}");
+            }
+        }
+
+        //public void ShowTranskryption(MyDictionary dictionary, string word)
+        //{
+
+        //}
 
         public void ShowAllDict(DictionaryList dictionaryList)
         {

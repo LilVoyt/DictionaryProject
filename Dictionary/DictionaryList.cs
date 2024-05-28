@@ -33,12 +33,18 @@ namespace Dictionary
         }
         public List<MyDictionary> ReadFromFile()
         {
-            using(StreamReader sr = new StreamReader("allDictionaries.txt"))
+            if (!File.Exists("allDictionaries.txt"))
             {
-                Dictionaries = JsonConvert.DeserializeObject<List<MyDictionary>>(sr.ReadToEnd());
+                return new List<MyDictionary>();
             }
-            return Dictionaries;
+
+            using (StreamReader sr = new StreamReader("allDictionaries.txt"))
+            {
+                var content = sr.ReadToEnd();
+                return string.IsNullOrWhiteSpace(content) ? new List<MyDictionary>() : JsonConvert.DeserializeObject<List<MyDictionary>>(content);
+            }
         }
+
 
         public override string ToString()
         {
