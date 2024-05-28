@@ -26,9 +26,10 @@ namespace Dictionary
             //Console.WriteLine(list.Dictionaries[1]);    
             //list.WriteToFile();
 
-            DictionaryList dictionaryList = new DictionaryList();
-            dictionaryList.AddDictionary("ua", "pl");
-            Console.WriteLine(dictionaryList);
+            //DictionaryList dictionaryList = new DictionaryList();
+            //dictionaryList.AddDictionary("ua", "pl");
+            //Console.WriteLine(dictionaryList);
+            ApiMenu menu = new ApiMenu();
         }
     }
 }

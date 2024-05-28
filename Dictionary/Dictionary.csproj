@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiMenu.cs" />
     <Compile Include="DictionaryList.cs" />
     <Compile Include="MyDictionary.cs" />
     <Compile Include="Program.cs" />
