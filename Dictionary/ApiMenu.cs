@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,8 +39,11 @@ namespace Dictionary
                 Console.WriteLine("1 - add new word");
                 Console.WriteLine("2 - Show word transcription");
                 Console.WriteLine("3 - Show all words with transactions");
-                Console.WriteLine("4 - Exit");
+                Console.WriteLine("4 - Change translation of word");
+                Console.WriteLine("5 - Exit");
                 int toDo = int.Parse(Console.ReadLine());
+                Thread.Sleep(1000);
+                Console.Clear();
                 switch (toDo)
                 {
                     case 1:
@@ -48,14 +52,18 @@ namespace Dictionary
                         break;
                     case 2:
                         ShowExactTranscription(list.Dictionaries[choose]);
-                        Thread.Sleep(1000);
-                        Console.Clear();
-                        ShowExactTranscription(list.Dictionaries[choose]); //change
                         break;
                     case 3:
                         ShowAllTransactions(list.Dictionaries[choose]);
                         break;
                     case 4:
+                        EditTranlations(list.Dictionaries[choose]);
+                        list.WriteToFile();
+                        break;
+                    case 5:
+
+                        break;
+                    case 6:
                         Thread.Sleep(1000);
                         Console.Clear();
                         ChooseDictionary();
@@ -105,10 +113,12 @@ namespace Dictionary
             {
                 var exactDictionary = dictionary.Pairs.Select(pair => $"{pair.Key} - {string.Join(", ", pair.Value)}").ToList();
                 Console.WriteLine($"{exactDictionary[0]}");
+                EndOrContinueGame(dictionary);
             }
             else
             {
                 Console.WriteLine($"The word '{word}' was not found in the {dictionary.KeyLanguage}-{dictionary.ValueLanguage} dictionary.");
+                EndOrContinueGame(dictionary);
             }
         }
 
@@ -148,5 +158,105 @@ namespace Dictionary
             }
         }
 
+        public void EndOrContinueGame(MyDictionary dictionary)
+        {
+            Console.WriteLine("Do you want to find next word (Y - yes, Q - quit)?");
+            char isContinue = char.Parse(Console.ReadLine());
+            if (isContinue == 'y')
+            {
+                Thread.Sleep(1000);
+                Console.Clear();
+                ShowExactTranscription(dictionary);
+            }
+            else if (isContinue == 'q')
+            {
+                return;
+            }
+        }
+
+        public void EditTranlations(MyDictionary dictionary)
+        {
+            Console.Write($"Write the word to change translation in {dictionary.KeyLanguage}: ");
+            string word = Console.ReadLine();
+            if (dictionary.Pairs.TryGetValue(word, out List<string> translations))
+            {
+                string words = string.Join(", ", translations.ToArray());
+                StringBuilder currentText = new StringBuilder(words);
+                Console.Write(currentText.ToString());
+
+                Console.SetCursorPosition(words.Length, Console.CursorTop);
+
+                EditText(currentText);
+
+                Console.WriteLine("\nFinal text: " + currentText.ToString());
+
+                List<string> strings = currentText.ToString().Split(new string[] { ", "}, StringSplitOptions.None).ToList();
+                dictionary.Pairs[word].Clear();
+                dictionary.Pairs[word].AddRange(strings);
+            }
+        }
+
+
+        static void EditText(StringBuilder text)
+        {
+            int cursorPosition = text.Length;
+            ConsoleKeyInfo keyInfo;
+
+            while ((keyInfo = Console.ReadKey(intercept: true)).Key != ConsoleKey.Enter)
+            {
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.LeftArrow:
+                        if (cursorPosition > 0)
+                        {
+                            cursorPosition--;
+                            Console.SetCursorPosition(cursorPosition, Console.CursorTop);
+                        }
+                        break;
+
+                    case ConsoleKey.RightArrow:
+                        if (cursorPosition < text.Length)
+                        {
+                            cursorPosition++;
+                            Console.SetCursorPosition(cursorPosition, Console.CursorTop);
+                        }
+                        break;
+
+                    case ConsoleKey.Backspace:
+                        if (cursorPosition > 0)
+                        {
+                            text.Remove(cursorPosition - 1, 1);
+                            cursorPosition--;
+                            RedrawText(text, cursorPosition);
+                        }
+                        break;
+
+                    case ConsoleKey.Delete:
+                        if (cursorPosition < text.Length)
+                        {
+                            text.Remove(cursorPosition, 1);
+                            RedrawText(text, cursorPosition);
+                        }
+                        break;
+
+                    default:
+                        if (!char.IsControl(keyInfo.KeyChar))
+                        {
+                            text.Insert(cursorPosition, keyInfo.KeyChar);
+                            cursorPosition++;
+                            RedrawText(text, cursorPosition);
+                        }
+                        break;
+                }
+            }
+        }
+
+        static void RedrawText(StringBuilder text, int cursorPosition)
+        {
+            int originalCursorPosition = Console.CursorLeft;
+            Console.SetCursorPosition(0, Console.CursorTop);
+            Console.Write(text.ToString() + new string(' ', Console.WindowWidth - text.Length));
+            Console.SetCursorPosition(cursorPosition, Console.CursorTop);
+        }
     }
 }
