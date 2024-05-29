@@ -34,7 +34,6 @@ namespace Dictionary
 
             if (int.TryParse(input, out choose) && choose >= 0 && choose < list.Dictionaries.Count)
             {
-                //Console.WriteLine(list.Dictionaries[choose]);
                 Console.WriteLine("What you want to do");
                 Console.WriteLine("1 - add new word");
                 Console.WriteLine("2 - Show word transcription");
