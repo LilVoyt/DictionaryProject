@@ -28,12 +28,17 @@ namespace Dictionary
             Console.Write("Choose an index: ");
             string input = Console.ReadLine();
             int choose;
+            Thread.Sleep(1000);
+            Console.Clear();
 
             if (int.TryParse(input, out choose) && choose >= 0 && choose < list.Dictionaries.Count)
             {
-                Console.WriteLine(list.Dictionaries[choose]);
+                //Console.WriteLine(list.Dictionaries[choose]);
                 Console.WriteLine("What you want to do");
                 Console.WriteLine("1 - add new word");
+                Console.WriteLine("2 - Show word transcription");
+                Console.WriteLine("3 - Show all words with transactions");
+                Console.WriteLine("4 - Exit");
                 int toDo = int.Parse(Console.ReadLine());
                 switch (toDo)
                 {
@@ -42,7 +47,18 @@ namespace Dictionary
                         list.WriteToFile();
                         break;
                     case 2:
-                        
+                        ShowExactTranscription(list.Dictionaries[choose]);
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        ShowExactTranscription(list.Dictionaries[choose]); //change
+                        break;
+                    case 3:
+                        ShowAllTransactions(list.Dictionaries[choose]);
+                        break;
+                    case 4:
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        ChooseDictionary();
                         break;
                 }
             }
@@ -73,10 +89,39 @@ namespace Dictionary
             }
         }
 
-        //public void ShowTranskryption(MyDictionary dictionary, string word)
-        //{
+        public void ShowExactTranscription(MyDictionary dictionary)
+        {
+            var allDictionaries = dictionary.Pairs
+                .Select(pair => pair.Key);
 
-        //}
+            foreach (var transaction in allDictionaries)
+            {
+                Console.WriteLine(transaction);
+            }
+
+            Console.Write($"Write the word to find in {dictionary.KeyLanguage}: ");
+            string word = Console.ReadLine();
+            if (dictionary.Pairs.TryGetValue(word, out List<string> translations))
+            {
+                var exactDictionary = dictionary.Pairs.Select(pair => $"{pair.Key} - {string.Join(", ", pair.Value)}").ToList();
+                Console.WriteLine($"{exactDictionary[0]}");
+            }
+            else
+            {
+                Console.WriteLine($"The word '{word}' was not found in the {dictionary.KeyLanguage}-{dictionary.ValueLanguage} dictionary.");
+            }
+        }
+
+        public void ShowAllTransactions(MyDictionary dictionary)
+        {
+            var allTransactions = dictionary.Pairs
+                .Select(pair => $"{pair.Key} - {string.Join(", ", pair.Value)}");
+
+            foreach (var transaction in allTransactions)
+            {
+                Console.WriteLine(transaction);
+            }
+        }
 
         public void ShowAllDict(DictionaryList dictionaryList)
         {
@@ -102,5 +147,6 @@ namespace Dictionary
                 Console.WriteLine("Invalid index.");
             }
         }
+
     }
 }
