@@ -19,34 +19,66 @@ namespace Dictionary
             KeyLanguage = keyLanguage;
             ValueLanguage = valueLanguage;
             Path = $"{this.KeyLanguage}-{this.ValueLanguage} dictionary.txt";
-            WriteToFile();
-            Pairs = ReadFromFile() ?? new Dictionary<string, List<string>>();
+            Pairs = new Dictionary<string, List<string>>();
         }
 
         private Dictionary<string, List<string>> ReadFromFile()
         {
             using(StreamReader sr = new StreamReader(Path))
             {
-                Pairs = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(sr.ReadToEnd()) ?? new Dictionary<string, List<string>>();
+                Console.WriteLine(sr.ReadToEnd());
             }
             return Pairs;
         }
 
         public void WriteToFile()
         {
-            string json = JsonConvert.SerializeObject(Pairs);
-
-            using (StreamWriter sw = new StreamWriter(Path))
+            string text = "";
+            foreach (var pair in Pairs)
             {
-                sw.WriteLine(json);
+                text += $"{pair.Key} - {string.Join(", ", pair.Value)} \n";
+            }
+            using (StreamWriter sw = new StreamWriter(Path, false))
+            {
+                sw.WriteLine(text);
             }
         }
 
         public void Add(string key, List<string> values)
         {
-            Pairs = ReadFromFile();
             Pairs.Add(key, values);
+        }
+
+        private void AddRange(string word, List<string> definitions)
+        {
+            if (Pairs.ContainsKey(word))
+            {
+                Pairs[word].AddRange(definitions);
+            }
+            else
+            {
+                Pairs[word] = definitions;
+            }
+        }
+
+        public void Add()
+        {
+            Console.Write($"Enter new word in {KeyLanguage}: ");
+            string word = Console.ReadLine();
+            Console.Write($"Enter the definitions in {ValueLanguage} (split by ', '): ");
+            string value = Console.ReadLine();
+            List<string> words = value.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+            if (Pairs.ContainsKey(word))
+            {
+                AddRange(word, words);
+            }
+            else
+            {
+                Add(word, words);
+            }
+            Pairs = Pairs.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
             WriteToFile();
+            ReadFromFile();
         }
 
         public override string ToString()

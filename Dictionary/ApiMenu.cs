@@ -51,7 +51,7 @@ namespace Dictionary
                 switch (toDo)
                 {
                     case 1:
-                        AddNewWord(list.Dictionaries[choose]);
+                        list.Dictionaries[choose].Add();
                         list.WriteToFile();
                         break;
                     case 2:
@@ -90,7 +90,7 @@ namespace Dictionary
                 char isContinue = char.Parse(Console.ReadLine());
                 if(isContinue == 'y')
                 {
-                    AddNewWord(list.Dictionaries[list.Dictionaries.Count - 1]);
+                    list.Dictionaries[choose].Add();
                     list.WriteToFile();
                 }
             }
@@ -136,27 +136,6 @@ namespace Dictionary
             else if(isContinue == 'q')
             {
                 ChooseDictionary();
-            }
-        }
-
-        public void AddNewWord(MyDictionary dictionary)
-        {
-            Console.Write($"Enter new word in {dictionary.KeyLanguage}: ");
-            string word = Console.ReadLine();
-            Console.Write($"Enter the definitions in {dictionary.ValueLanguage} (split by ', '): ");
-            string value = Console.ReadLine();
-            List<string> words = value.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
-            if (dictionary.Pairs.ContainsKey(word))
-            {
-                dictionary.Pairs[word].AddRange(words);
-            }
-            else
-            {
-                dictionary.Pairs.Add(word, words);
-            }
-            foreach(var pair in dictionary.Pairs)
-            {
-                Console.WriteLine($"{pair.Key} - {string.Join(", ", pair.Value)}");
             }
         }
 
