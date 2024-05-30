@@ -27,7 +27,8 @@ namespace Dictionary
             DictionaryList list = new DictionaryList();
             ShowAllDict(list);
             Console.WriteLine($"[{list.Dictionaries.Count}] Add Dictionary");
-            Console.WriteLine($"[{list.Dictionaries.Count + 1}] Exit");
+            Console.WriteLine($"[{list.Dictionaries.Count + 1}] Delete Dictionary");
+            Console.WriteLine($"[{list.Dictionaries.Count + 2}] Exit");
             Console.Write("Choose an index: ");
             string input = Console.ReadLine();
             int choose;
@@ -95,7 +96,8 @@ namespace Dictionary
             }
             else if (int.TryParse(input, out choose) && choose >= 0 && choose == list.Dictionaries.Count + 1)
             {
-
+                DeleteDictionary(list);
+                list.WriteToFile();
             }
             else if (int.TryParse(input, out choose) && choose >= 0 && choose == list.Dictionaries.Count + 2)
             {
@@ -107,7 +109,15 @@ namespace Dictionary
             }
         }
 
-        public void DeleteDictionary()
+        public void DeleteDictionary(DictionaryList dictionaryList)
+        {
+            Console.Write("Enter the index of dictionary: ");
+            int index = int.Parse(Console.ReadLine());
+
+            dictionaryList.Dictionaries.RemoveAt(index);
+            dictionaryList.WriteToFile();
+            ChooseDictionary();
+        }
 
         public void DeleteWord(MyDictionary dictionary)
         {
