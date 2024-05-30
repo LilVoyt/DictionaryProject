@@ -81,6 +81,92 @@ namespace Dictionary
             ReadFromFile();
         }
 
+        public void ShowExactTranscription()
+        {
+            foreach (var pair in Pairs)
+            {
+                Console.WriteLine(pair.Key);
+            }
+
+            Console.Write($"Write the word to find in {KeyLanguage}: ");
+            string word = Console.ReadLine();
+            if (Pairs.TryGetValue(word, out List<string> translations))
+            {
+                Console.WriteLine($"{word} - {string.Join(", ", translations)}");
+            }
+            else
+            {
+                Console.WriteLine($"The word '{word}' was not found in the {KeyLanguage}-{ValueLanguage} dictionary.");
+            }
+        }
+
+        public void ShowAllTranscription()
+        {
+            var allTransactions = Pairs
+                .Select(pair => $"{pair.Key} - {string.Join(", ", pair.Value)}");
+
+            foreach (var transaction in allTransactions)
+            {
+                Console.WriteLine(transaction);
+            }
+        }
+
+        public void EditTranlations()
+        {
+            Console.WriteLine("Your keys: ");
+            foreach (var pair in Pairs)
+            {
+                Console.WriteLine(pair.Key);
+            }
+            Console.Write($"Write the word to change translation in {KeyLanguage}: ");
+            string word = Console.ReadLine();
+            if (Pairs.TryGetValue(word, out List<string> translations))
+            {
+                string words = string.Join(", ", translations.ToArray());
+                StringBuilder currentText = new StringBuilder(words);
+                Console.Write(currentText.ToString());
+
+                Console.SetCursorPosition(words.Length, Console.CursorTop);
+
+                ApiMenu.EditText(currentText);
+
+                Console.WriteLine("\nFinal text: " + currentText.ToString());
+
+                List<string> strings = currentText.ToString().Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+                Pairs[word].Clear();
+                Pairs[word].AddRange(strings);
+            }
+        }
+
+        public void EditKey()
+        {
+            Console.WriteLine("Your keys: ");
+            foreach (var pair in Pairs)
+            {
+                Console.WriteLine(pair.Key);
+            }
+            Console.Write($"Write the key to change in {KeyLanguage}: ");
+            string word = Console.ReadLine();
+
+            if (Pairs.TryGetValue(word, out List<string> translations))
+            {
+                Console.WriteLine($"Enter new key in {KeyLanguage}: ");
+                string newKey = Console.ReadLine();
+
+                Pairs.Remove(word);
+                Pairs.Add(newKey, translations);
+            }
+        }
+
+        public void DeleteWord()
+        {
+            Console.WriteLine($"Enter the key word to delete");
+            string word = Console.ReadLine();
+
+            Pairs.Remove(word);
+            Console.WriteLine($"{word} was deleted");
+        }
+
         public override string ToString()
         {
             string res = "";
