@@ -26,6 +26,8 @@ namespace Dictionary
         {
             DictionaryList list = new DictionaryList();
             ShowAllDict(list);
+            Console.WriteLine($"[{list.Dictionaries.Count}] Add Dictionary");
+            Console.WriteLine($"[{list.Dictionaries.Count + 1}] Exit");
             Console.Write("Choose an index: ");
             string input = Console.ReadLine();
             int choose;
@@ -35,11 +37,13 @@ namespace Dictionary
             if (int.TryParse(input, out choose) && choose >= 0 && choose < list.Dictionaries.Count)
             {
                 Console.WriteLine("What you want to do");
-                Console.WriteLine("1 - add new word");
+                Console.WriteLine("1 - Add new word");
                 Console.WriteLine("2 - Show word transcription");
                 Console.WriteLine("3 - Show all words with transactions");
                 Console.WriteLine("4 - Change translation of word");
-                Console.WriteLine("5 - Exit");
+                Console.WriteLine("5 - Change key word");
+                Console.WriteLine("6 - Delete word and definition");
+                Console.WriteLine("7 - Exit");
                 int toDo = int.Parse(Console.ReadLine());
                 Thread.Sleep(1000);
                 Console.Clear();
@@ -60,18 +64,68 @@ namespace Dictionary
                         list.WriteToFile();
                         break;
                     case 5:
-
+                        EditKey(list.Dictionaries[choose]);
+                        list.WriteToFile();
                         break;
                     case 6:
+                        DeleteWord(list.Dictionaries[choose]);
+                        break;
+                    case 7:
                         Thread.Sleep(1000);
                         Console.Clear();
                         ChooseDictionary();
                         break;
                 }
             }
+            else if (int.TryParse(input, out choose) && choose >= 0 && choose == list.Dictionaries.Count)
+            {
+                Console.Write("Enter the key language: ");
+                string keyLanguage = Console.ReadLine();
+                Console.Write("Enter the value language: ");
+                string valueLanguage = Console.ReadLine();
+                list.AddDictionary(keyLanguage, valueLanguage);
+
+                Console.WriteLine("Do you want to add something here (y - yes, q - quit)??");
+                char isContinue = char.Parse(Console.ReadLine());
+                if(isContinue == 'y')
+                {
+                    AddNewWord(list.Dictionaries[list.Dictionaries.Count - 1]);
+                    list.WriteToFile();
+                }
+            }
+            else if (int.TryParse(input, out choose) && choose >= 0 && choose == list.Dictionaries.Count + 1)
+            {
+
+            }
+            else if (int.TryParse(input, out choose) && choose >= 0 && choose == list.Dictionaries.Count + 2)
+            {
+                return;
+            }
             else
             {
                 Console.WriteLine("Invalid choice. Please enter a valid index.");
+            }
+        }
+
+        public void DeleteDictionary()
+
+        public void DeleteWord(MyDictionary dictionary)
+        {
+            Console.WriteLine($"Enter the key word to delete");
+            string word = Console.ReadLine();
+
+            dictionary.Pairs.Remove(word);
+            Console.WriteLine($"{word} was deleted");
+
+            Console.WriteLine("Do you want to delete another (Y - yes, Q - quit)?");
+            char isContinue = char.Parse(Console.ReadLine());
+            if(isContinue == 'y')
+            {
+                DeleteWord(dictionary);
+            }
+            else if(isContinue == 'q')
+            {
+                ChooseDictionary();
             }
         }
 
@@ -193,6 +247,22 @@ namespace Dictionary
                 dictionary.Pairs[word].Clear();
                 dictionary.Pairs[word].AddRange(strings);
             }
+        }
+
+        public void EditKey(MyDictionary dictionary)
+        {
+            Console.Write($"Write the key to change in {dictionary.KeyLanguage}: ");
+            string word = Console.ReadLine();
+
+            if (dictionary.Pairs.TryGetValue(word, out List<string> translations))
+            {
+                Console.WriteLine($"Enter new key in {dictionary.KeyLanguage}: ");
+                string newKey = Console.ReadLine();
+
+                dictionary.Pairs.Remove(word);
+                dictionary.Pairs.Add(newKey, translations);
+            }
+
         }
 
 
