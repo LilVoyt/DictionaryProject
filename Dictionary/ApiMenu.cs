@@ -24,16 +24,23 @@ namespace Dictionary
 
         public void ChooseDictionary()
         {
+            Console.Clear();
             DictionaryList list = new DictionaryList();
             ShowAllDict(list);
             Console.WriteLine($"[{list.Dictionaries.Count}] Add Dictionary");
-            Console.WriteLine($"[{list.Dictionaries.Count + 1}] Exit");
+            Console.WriteLine($"[{list.Dictionaries.Count + 1}] Delete Dictionary");
+            Console.WriteLine($"[{list.Dictionaries.Count + 2}] Exit");
             Console.Write("Choose an index: ");
             string input = Console.ReadLine();
-            int choose;
             Thread.Sleep(1000);
             Console.Clear();
+            WorkWithDictionary(list, input);
+        }
 
+        public void WorkWithDictionary(DictionaryList list, string input)
+        {
+            Console.Clear();
+            int choose;
             if (int.TryParse(input, out choose) && choose >= 0 && choose < list.Dictionaries.Count)
             {
                 Console.WriteLine("What you want to do");
@@ -50,25 +57,50 @@ namespace Dictionary
                 switch (toDo)
                 {
                     case 1:
-                        AddNewWord(list.Dictionaries[choose]);
+                        list.Dictionaries[choose].Add();
                         list.WriteToFile();
+                        Console.WriteLine("Type something to enter menu: ");
+                        Console.ReadKey();
+                        Thread.Sleep(1000);
+                        WorkWithDictionary(list, input);
                         break;
                     case 2:
-                        ShowExactTranscription(list.Dictionaries[choose]);
+                        list.Dictionaries[choose].ShowExactTranscription();
+                        Console.WriteLine("Type something to enter menu: ");
+                        Console.ReadKey();
+                        Thread.Sleep(1000);
+                        WorkWithDictionary(list, input);
                         break;
                     case 3:
-                        ShowAllTransactions(list.Dictionaries[choose]);
+                        list.Dictionaries[choose].ShowAllTranscription();
+                        Console.WriteLine("Type something to enter menu: ");
+                        Console.ReadKey();
+                        Thread.Sleep(1000);
+                        WorkWithDictionary(list, input);
                         break;
                     case 4:
-                        EditTranlations(list.Dictionaries[choose]);
+                        list.Dictionaries[choose].EditTranlations();
                         list.WriteToFile();
+                        Console.WriteLine("Type something to enter menu: ");
+                        Console.ReadKey();
+                        Thread.Sleep(1000);
+                        WorkWithDictionary(list, input);
                         break;
                     case 5:
-                        EditKey(list.Dictionaries[choose]);
+                        list.Dictionaries[choose].EditKey();
                         list.WriteToFile();
+                        Console.WriteLine("Type something to enter menu: ");
+                        Console.ReadKey();
+                        Thread.Sleep(1000);
+                        WorkWithDictionary(list, input);
                         break;
                     case 6:
-                        DeleteWord(list.Dictionaries[choose]);
+                        list.Dictionaries[choose].DeleteWord();
+                        list.WriteToFile();
+                        Console.WriteLine("Type something to enter menu: ");
+                        Console.ReadKey();
+                        Thread.Sleep(1000);
+                        WorkWithDictionary(list, input);
                         break;
                     case 7:
                         Thread.Sleep(1000);
@@ -87,15 +119,16 @@ namespace Dictionary
 
                 Console.WriteLine("Do you want to add something here (y - yes, q - quit)??");
                 char isContinue = char.Parse(Console.ReadLine());
-                if(isContinue == 'y')
+                if (isContinue == 'y')
                 {
-                    AddNewWord(list.Dictionaries[list.Dictionaries.Count - 1]);
+                    list.Dictionaries[choose].Add();
                     list.WriteToFile();
                 }
             }
             else if (int.TryParse(input, out choose) && choose >= 0 && choose == list.Dictionaries.Count + 1)
             {
-
+                DeleteDictionary(list);
+                list.WriteToFile();
             }
             else if (int.TryParse(input, out choose) && choose >= 0 && choose == list.Dictionaries.Count + 2)
             {
@@ -107,83 +140,14 @@ namespace Dictionary
             }
         }
 
-        public void DeleteDictionary()
-
-        public void DeleteWord(MyDictionary dictionary)
+        public void DeleteDictionary(DictionaryList dictionaryList)
         {
-            Console.WriteLine($"Enter the key word to delete");
-            string word = Console.ReadLine();
+            Console.Write("Enter the index of dictionary: ");
+            int index = int.Parse(Console.ReadLine());
 
-            dictionary.Pairs.Remove(word);
-            Console.WriteLine($"{word} was deleted");
-
-            Console.WriteLine("Do you want to delete another (Y - yes, Q - quit)?");
-            char isContinue = char.Parse(Console.ReadLine());
-            if(isContinue == 'y')
-            {
-                DeleteWord(dictionary);
-            }
-            else if(isContinue == 'q')
-            {
-                ChooseDictionary();
-            }
-        }
-
-        public void AddNewWord(MyDictionary dictionary)
-        {
-            Console.Write($"Enter new word in {dictionary.KeyLanguage}: ");
-            string word = Console.ReadLine();
-            Console.Write($"Enter the definitions in {dictionary.ValueLanguage} (split by ', '): ");
-            string value = Console.ReadLine();
-            List<string> words = value.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
-            if (dictionary.Pairs.ContainsKey(word))
-            {
-                dictionary.Pairs[word].AddRange(words);
-            }
-            else
-            {
-                dictionary.Pairs.Add(word, words);
-            }
-            foreach(var pair in dictionary.Pairs)
-            {
-                Console.WriteLine($"{pair.Key} - {string.Join(", ", pair.Value)}");
-            }
-        }
-
-        public void ShowExactTranscription(MyDictionary dictionary)
-        {
-            var allDictionaries = dictionary.Pairs
-                .Select(pair => pair.Key);
-
-            foreach (var transaction in allDictionaries)
-            {
-                Console.WriteLine(transaction);
-            }
-
-            Console.Write($"Write the word to find in {dictionary.KeyLanguage}: ");
-            string word = Console.ReadLine();
-            if (dictionary.Pairs.TryGetValue(word, out List<string> translations))
-            {
-                var exactDictionary = dictionary.Pairs.Select(pair => $"{pair.Key} - {string.Join(", ", pair.Value)}").ToList();
-                Console.WriteLine($"{exactDictionary[0]}");
-                EndOrContinueGame(dictionary);
-            }
-            else
-            {
-                Console.WriteLine($"The word '{word}' was not found in the {dictionary.KeyLanguage}-{dictionary.ValueLanguage} dictionary.");
-                EndOrContinueGame(dictionary);
-            }
-        }
-
-        public void ShowAllTransactions(MyDictionary dictionary)
-        {
-            var allTransactions = dictionary.Pairs
-                .Select(pair => $"{pair.Key} - {string.Join(", ", pair.Value)}");
-
-            foreach (var transaction in allTransactions)
-            {
-                Console.WriteLine(transaction);
-            }
+            dictionaryList.Dictionaries.RemoveAt(index);
+            dictionaryList.WriteToFile();
+            ChooseDictionary();
         }
 
         public void ShowAllDict(DictionaryList dictionaryList)
@@ -219,7 +183,7 @@ namespace Dictionary
             {
                 Thread.Sleep(1000);
                 Console.Clear();
-                ShowExactTranscription(dictionary);
+                dictionary.ShowExactTranscription();
             }
             else if (isContinue == 'q')
             {
@@ -227,46 +191,8 @@ namespace Dictionary
             }
         }
 
-        public void EditTranlations(MyDictionary dictionary)
-        {
-            Console.Write($"Write the word to change translation in {dictionary.KeyLanguage}: ");
-            string word = Console.ReadLine();
-            if (dictionary.Pairs.TryGetValue(word, out List<string> translations))
-            {
-                string words = string.Join(", ", translations.ToArray());
-                StringBuilder currentText = new StringBuilder(words);
-                Console.Write(currentText.ToString());
 
-                Console.SetCursorPosition(words.Length, Console.CursorTop);
-
-                EditText(currentText);
-
-                Console.WriteLine("\nFinal text: " + currentText.ToString());
-
-                List<string> strings = currentText.ToString().Split(new string[] { ", "}, StringSplitOptions.None).ToList();
-                dictionary.Pairs[word].Clear();
-                dictionary.Pairs[word].AddRange(strings);
-            }
-        }
-
-        public void EditKey(MyDictionary dictionary)
-        {
-            Console.Write($"Write the key to change in {dictionary.KeyLanguage}: ");
-            string word = Console.ReadLine();
-
-            if (dictionary.Pairs.TryGetValue(word, out List<string> translations))
-            {
-                Console.WriteLine($"Enter new key in {dictionary.KeyLanguage}: ");
-                string newKey = Console.ReadLine();
-
-                dictionary.Pairs.Remove(word);
-                dictionary.Pairs.Add(newKey, translations);
-            }
-
-        }
-
-
-        static void EditText(StringBuilder text)
+        static public void EditText(StringBuilder text)
         {
             int cursorPosition = text.Length;
             ConsoleKeyInfo keyInfo;
@@ -320,7 +246,7 @@ namespace Dictionary
             }
         }
 
-        static void RedrawText(StringBuilder text, int cursorPosition)
+        static public void RedrawText(StringBuilder text, int cursorPosition)
         {
             int originalCursorPosition = Console.CursorLeft;
             Console.SetCursorPosition(0, Console.CursorTop);
